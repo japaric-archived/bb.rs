@@ -57,6 +57,15 @@ impl Led {
     }
 
     /// Makes the LED blink
+    ///
+    /// # Example
+    ///
+    /// ``` ignore
+    /// use bb::led::{Led, Zero};
+    ///
+    /// // On for one second, off for half a second
+    /// Led::new(Zero).blink(1000, 500);
+    /// ```
     // XXX Not sure about how big can `on_ms` and `off_ms` be
     pub fn blink(&self, on_ms: u16, off_ms: u16) {
         self.set_trigger(Timer);
@@ -83,6 +92,15 @@ impl Led {
     }
 
     /// Changes the trigger mode of the LED
+    ///
+    /// # Example
+    ///
+    /// ``` ignore
+    /// use bb::led::{Led, Heartbeat, Zero};
+    ///
+    /// Led::new(Zero).set_trigger(Heartbeat);
+    /// println!("I'm alive!");
+    /// ```
     pub fn set_trigger(&self, trigger: Trigger) {
         just::write(&self.root.join("trigger"), trigger.to_str());
     }
