@@ -6,10 +6,31 @@ Rust library to do GPIO on the beaglebone
 
 This library has been fully developed *on* the beaglebone using cargo!
 
-(There are no official rust/cargo nightlies for ARM, but I'm unofficially
+(There are no official rust/cargo nightlies for ARM at the moment, but I'm
 hosting my own [here][ruststrap])
 
 # [Documentation][docs]
+
+# Canonical example
+
+``` rust
+extern crate bb;
+
+use bb::led::{Led, Zero};
+
+fn main() {
+    // Blink LED0: ON for 500 ms, OFF for 500 ms, repeat
+    Led::new(Zero).blink(500, 500);
+}
+```
+
+# Cargo this
+
+```
+# Cargo.toml
+[dependencies.bb]
+git = "https://github.com/japaric/bb.rs"
+```
 
 # Features
 
