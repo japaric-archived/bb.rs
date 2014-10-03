@@ -26,3 +26,4 @@ See LICENSE-APACHE and LICENSE-MIT for more details.
 
 [docs]: http://rust-ci.org/japaric/bb.rs/doc/bb/
 [ruststrap]: https://github.com/japaric/ruststrap
+[status]: https://travis-ci.org/japaric/bb.rs.svg?branch=master
