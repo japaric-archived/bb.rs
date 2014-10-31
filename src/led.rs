@@ -111,9 +111,9 @@ impl Led {
         match s[].split('[').skip(1).next().and_then(|s| s.split(']').next()) {
             Some(s) => match Trigger::from_str(s) {
                 Some(trigger) => trigger,
-                None => fail!("Unknown trigger mode: {}", s),
+                None => panic!("Unknown trigger mode: {}", s),
             },
-            None => fail!("Failed to parse: {}", s),
+            None => panic!("Failed to parse: {}", s),
         }
     }
 }
