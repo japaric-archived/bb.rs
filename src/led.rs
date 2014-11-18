@@ -20,25 +20,25 @@ pub enum Number {
 /// LED trigger modes
 pub enum Trigger {
     Heartbeat,
-    NoTrigger,
+    None,
     Timer,
 }
 
 impl Trigger {
     fn from_str(s: &str) -> Option<Trigger> {
         match s {
-            "heartbeat" => Some(Heartbeat),
-            "none" => Some(NoTrigger),
-            "timer" => Some(Timer),
+            "heartbeat" => Some(Trigger::Heartbeat),
+            "none" => Some(Trigger::None),
+            "timer" => Some(Trigger::Timer),
             _ => None,
         }
     }
 
     fn to_str(&self) -> &'static str {
         match *self {
-            Heartbeat => "heartbeat",
-            NoTrigger => "none",
-            Timer => "timer",
+            Trigger::Heartbeat => "heartbeat",
+            Trigger::None => "none",
+            Trigger::Timer => "timer",
         }
     }
 }
@@ -68,7 +68,7 @@ impl Led {
     /// ```
     // XXX Not sure about how big can `on_ms` and `off_ms` be
     pub fn blink(&self, on_ms: u16, off_ms: u16) {
-        self.set_trigger(Timer);
+        self.set_trigger(Trigger::Timer);
         just::write(&self.root.join("delay_on"), format!("{}", on_ms)[]);
         just::write(&self.root.join("delay_off"), format!("{}", off_ms)[]);
     }
@@ -81,13 +81,13 @@ impl Led {
 
     /// Turns on the LED
     pub fn set_high(&self) {
-        self.set_trigger(NoTrigger);
+        self.set_trigger(Trigger::None);
         self.set_brightness(1);
     }
 
     /// Turns off the LED
     pub fn set_low(&self) {
-        self.set_trigger(NoTrigger);
+        self.set_trigger(Trigger::None);
         self.set_brightness(0);
     }
 
