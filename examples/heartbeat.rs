@@ -1,7 +1,7 @@
 extern crate bb;
 
-use bb::led::{Heartbeat, Led, Zero};
+use bb::led::{Led, Number, Trigger};
 
 fn main() {
-    Led::new(Zero).set_trigger(Heartbeat);
+    Led::new(Number::Zero).set_trigger(Trigger::Heartbeat);
 }
