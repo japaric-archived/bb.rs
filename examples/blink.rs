@@ -1,7 +1,7 @@
 extern crate bb;
 
-use bb::led::{Led, Zero};
+use bb::led::{Led, Number};
 
 fn main() {
-    Led::new(Zero).blink(500, 500);
+    Led::new(Number::Zero).blink(500, 500);
 }
