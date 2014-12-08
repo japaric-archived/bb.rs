@@ -1,5 +1,5 @@
 #![deny(warnings)]
-#![feature(if_let, slicing_syntax)]
+#![feature(slicing_syntax)]
 
 mod just;
 pub mod led;
