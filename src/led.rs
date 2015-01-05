@@ -6,7 +6,7 @@ use just;
 static ROOT: &'static str = "/sys/class/leds/beaglebone:green:usr";
 
 /// LED identifier
-#[deriving(Copy)]
+#[derive(Copy)]
 pub enum Number {
     /// First LED, by default is in heartbeat mode
     Zero = 0,
@@ -19,7 +19,7 @@ pub enum Number {
 }
 
 /// LED trigger modes
-#[deriving(Copy)]
+#[derive(Copy)]
 pub enum Trigger {
     Heartbeat,
     None,
