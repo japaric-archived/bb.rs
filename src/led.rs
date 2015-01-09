@@ -71,14 +71,14 @@ impl Led {
     // XXX Not sure about how big can `on_ms` and `off_ms` be
     pub fn blink(&self, on_ms: u16, off_ms: u16) {
         self.set_trigger(Trigger::Timer);
-        just::write(&self.root.join("delay_on"), format!("{}", on_ms)[]);
-        just::write(&self.root.join("delay_off"), format!("{}", off_ms)[]);
+        just::write(&self.root.join("delay_on"), &*format!("{}", on_ms));
+        just::write(&self.root.join("delay_off"), &*format!("{}", off_ms));
     }
 
     /// Changes the brightness of the LED
     // XXX Is `u8` enough?
     pub fn set_brightness(&self, brightness: u8) {
-        just::write(&self.root.join("brightness"), format!("{}", brightness)[])
+        just::write(&self.root.join("brightness"), &*format!("{}", brightness))
     }
 
     /// Turns on the LED
@@ -110,7 +110,7 @@ impl Led {
     /// Returns the current trigger mode the LED is using
     pub fn trigger(&self) -> Trigger {
         let s = just::read(&self.root.join("trigger"));
-        match s[].split('[').skip(1).next().and_then(|s| s.split(']').next()) {
+        match s.split('[').skip(1).next().and_then(|s| s.split(']').next()) {
             Some(s) => match Trigger::from_str(s) {
                 Some(trigger) => trigger,
                 None => panic!("Unknown trigger mode: {}", s),
