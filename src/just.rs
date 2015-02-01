@@ -1,6 +1,6 @@
 //! Operations that "just" `panic!` if they don't succeed
 
-use std::io::File;
+use std::old_io::File;
 
 pub fn read(path: &Path) -> String {
     let path_ = path.display();
