@@ -1,6 +1,6 @@
 #![deny(warnings)]
-#![feature(io)]
-#![feature(path)]
+#![feature(old_path)]
+#![feature(old_io)]
 
 mod just;
 pub mod led;
