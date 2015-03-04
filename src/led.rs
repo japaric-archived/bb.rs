@@ -1,6 +1,7 @@
 //! GPIO wired to the LEDs of the Beaglebone
 
-use just;
+use std::io;
+use std::path::PathBuf;
 
 /// Root folder (modulo number) that contains the files that control the GPIO
 static ROOT: &'static str = "/sys/class/leds/beaglebone:green:usr";
@@ -27,12 +28,12 @@ pub enum Trigger {
 }
 
 impl Trigger {
-    fn from_str(s: &str) -> Option<Trigger> {
+    fn from_str(s: &str) -> Trigger {
         match s {
-            "heartbeat" => Some(Trigger::Heartbeat),
-            "none" => Some(Trigger::None),
-            "timer" => Some(Trigger::Timer),
-            _ => None,
+            "heartbeat" => Trigger::Heartbeat,
+            "none" => Trigger::None,
+            "timer" => Trigger::Timer,
+            _ => panic!("Unknown trigger mode: {}", s),
         }
     }
 
@@ -47,14 +48,14 @@ impl Trigger {
 
 /// An LED controller
 pub struct Led {
-    root: Path,
+    root: PathBuf,
 }
 
 impl Led {
     /// Create access to an LED
     pub fn new(number: Number) -> Led {
         Led {
-            root: Path::new(format!("{}{}", ROOT, number as u8)),
+            root: PathBuf::new(&format!("{}{}", ROOT, number as u32)),
         }
     }
 
@@ -62,35 +63,34 @@ impl Led {
     ///
     /// # Example
     ///
-    /// ``` ignore
-    /// use bb::led::{Led, Zero};
+    /// ``` no_run
+    /// use bb::led::{Led, Number};
     ///
     /// // On for one second, off for half a second
-    /// Led::new(Zero).blink(1000, 500);
+    /// Led::new(Number::Zero).blink(1000, 500);
     /// ```
-    // XXX Not sure about how big can `on_ms` and `off_ms` be
-    pub fn blink(&self, on_ms: u16, off_ms: u16) {
-        self.set_trigger(Trigger::Timer);
-        just::write(&self.root.join("delay_on"), &*format!("{}", on_ms));
-        just::write(&self.root.join("delay_off"), &*format!("{}", off_ms));
+    pub fn blink(&self, on_ms: u32, off_ms: u32) -> io::Result<()> {
+        try!(self.set_trigger(Trigger::Timer));
+        try!(::write(&self.root.join("delay_on"), &on_ms.to_string()));
+        ::write(&self.root.join("delay_off"), &off_ms.to_string())
     }
 
     /// Changes the brightness of the LED
     // XXX Is `u8` enough?
-    pub fn set_brightness(&self, brightness: u8) {
-        just::write(&self.root.join("brightness"), &*format!("{}", brightness))
+    pub fn set_brightness(&self, brightness: u8) -> io::Result<()> {
+        ::write(&self.root.join("brightness"), &*format!("{}", brightness))
     }
 
     /// Turns on the LED
-    pub fn set_high(&self) {
-        self.set_trigger(Trigger::None);
-        self.set_brightness(1);
+    pub fn set_high(&self) -> io::Result<()> {
+        try!(self.set_trigger(Trigger::None));
+        self.set_brightness(1)
     }
 
     /// Turns off the LED
-    pub fn set_low(&self) {
-        self.set_trigger(Trigger::None);
-        self.set_brightness(0);
+    pub fn set_low(&self) -> io::Result<()> {
+        try!(self.set_trigger(Trigger::None));
+        self.set_brightness(0)
     }
 
     /// Changes the trigger mode of the LED
@@ -98,24 +98,26 @@ impl Led {
     /// # Example
     ///
     /// ``` ignore
-    /// use bb::led::{Led, Heartbeat, Zero};
+    /// use bb::led::{Led, Number, Trigger};
     ///
-    /// Led::new(Zero).set_trigger(Heartbeat);
+    /// Led::new(Number::Zero).set_trigger(Trigger::Heartbeat);
     /// println!("I'm alive!");
     /// ```
-    pub fn set_trigger(&self, trigger: Trigger) {
-        just::write(&self.root.join("trigger"), trigger.to_str());
+    pub fn set_trigger(&self, trigger: Trigger) -> io::Result<()> {
+        ::write(&self.root.join("trigger"), trigger.to_str())
     }
 
     /// Returns the current trigger mode the LED is using
-    pub fn trigger(&self) -> Trigger {
-        let s = just::read(&self.root.join("trigger"));
-        match s.split('[').skip(1).next().and_then(|s| s.split(']').next()) {
-            Some(s) => match Trigger::from_str(s) {
-                Some(trigger) => trigger,
-                None => panic!("Unknown trigger mode: {}", s),
+    pub fn trigger(&self) -> io::Result<Trigger> {
+        let mut string = String::new();
+
+        try!(::read(&self.root.join("trigger"), &mut string));
+
+        match (string.find('['), string.find(']')) {
+            (Some(start), Some(end)) => {
+                Ok(Trigger::from_str(&string[start+"[".len()..end-"]".len()]))
             },
-            None => panic!("Failed to parse: {}", s),
+            _ => panic!("Failed to parse: {}", string),
         }
     }
 }
