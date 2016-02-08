@@ -1,3 +1,17 @@
+# Status
+
+This project is **DEPRECATED**. This was mostly an experiment of doing Rust development on a
+BeagleBone. If you are looking for similar functionality, check [sysfs-gpio] which is more general
+because it supports any device.
+
+[sysfs-gpio]: https://crates.io/crates/sysfs_gpio
+
+This project won't receive further updates or bug fixes.
+
+-- @japaric, 2016/02/08
+
+---
+
 [![Build Status][status]](https://travis-ci.org/japaric/bb.rs)
 
 # `bb.rs`
